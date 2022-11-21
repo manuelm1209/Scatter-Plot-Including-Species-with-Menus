@@ -15,3 +15,18 @@ body {
     justify-content: space-around;
     padding-top: 10px;
   }
+
+  /* To comunicate the density. */
+  /* circle {
+    opacity: 0.25;
+  } */
+
+
+  /* Styling dropdown menus */
+  select,
+  label,
+  option {
+    font-size: 15px;
+    font-family: 'Share Tech', sans-serif;
+    font-weight: bold;
+  }

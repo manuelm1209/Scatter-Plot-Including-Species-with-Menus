@@ -44,23 +44,40 @@ const main = async () => {
     .xValue((d) => d.petal_width)
     .yValue((d) => d.petal_width)
     // d3 margin convention.
-    .margin({top: 20, right: 20, bottom: 40, left:50})
+    .margin({top: 20, right: 30, bottom: 70, left:120})
     svg.call(plot);
 
     const options = [
-        { value: 'petal_width', text: 'Petal Width' },
-        { value: 'sepal_width', text: 'Sepal Width' },
-        { value: 'petal_length', text: 'Petal Lenght' },
-        { value: 'sepal_length', text: 'Sepal Length' }
+        { value: 'petal_width', text: 'Petal Width', type: 'quantitative' },
+        { value: 'sepal_width', text: 'Sepal Width', type: 'quantitative' },
+        { value: 'petal_length', text: 'Petal Lenght', type: 'quantitative' },
+        { value: 'sepal_length', text: 'Sepal Length', type: 'quantitative' },
+        { value: 'species', text: 'Species', type: 'categorical' }
     ];
 
+    // const columnToType = new Map();
+    // options.forEach(option => {
+    //   columnToType.set(option.value, option.type);
+    // });
+    // console.log(options.map(({ value, type }) => [value, type]))
+    const columnToType = new Map(
+        options.map(({ value, type }) => [value, type])
+    );
+    options.forEach((option) => {
+        columnToType.set(option.value, option.type);
+    });
+
+    // column is a string, corresponding to
+    // the value property on metadata objects.
+    const getType = column => options.find(d => d.value === column).type;
 
     // Menus
-    xMenu.call(menu().id('x-menu').labelText('X:').options(options).on('change', column => {
-        svg.call(plot.xValue(d => d[column]));
+    xMenu.call(menu().id('x-menu').labelText('X: ').options(options).on('change', column => {
+        // console.log(getType(column));
+        svg.call(plot.xValue(d => d[column]).xType(getType(column)));
     } ));
-    yMenu.call(menu().id('y-menu').labelText('Y:').options(options).on('change', column => {
-        svg.call(plot.yValue(d => d[column]));
+    yMenu.call(menu().id('y-menu').labelText('Y: ').options(options).on('change', column => {
+        svg.call(plot.yValue(d => d[column]).yType(getType(column)));
     } ));
 
 };

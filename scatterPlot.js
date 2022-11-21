@@ -4,24 +4,26 @@ export const scatterPlot = () => {
     let data;
     let xValue;
     let yValue;
+    let xType;
+    let yType;
     let margin;
 
     const my = (selection) => {
         // X scale
-        const x = d3.scaleLinear()
+        const x = xType === 'categorical'
+        ? d3.scalePoint().domain(data.map(xValue)).range([margin.left, width - margin.right])
+        : d3.scaleLinear() 
         // Use next line to start the axis from the minimum value.
         .domain(d3.extent(data, xValue))
         // // Use next line to start the axis from 0.
         // .domain([0, d3.max(data, xValue)])
         .range([margin.left, width - margin.right]);
 
-        // Y scale
-        const y = d3.scaleLinear()
-            // Use next line to start the axis from the minimum value.
-            .domain(d3.extent(data, yValue))
-            // // Use next line to start the axis from 0
-            // .domain([0, d3.max(data, yValue)])
-            .range([height - margin.bottom - 30, margin.top]);
+        // Y scale        
+        const y = (yType === 'categorical'
+        ? d3.scalePoint().domain(data.map(yValue)).padding(0.5)
+        : d3.scaleLinear().domain(d3.extent(data, yValue)))
+        .range([height - margin.bottom, margin.top]);
 
         const marks = data.map(d => ({
             x: x(xValue(d)),
@@ -65,7 +67,7 @@ export const scatterPlot = () => {
             .data([null])
             .join('g')
             .attr('class', 'x-axis')
-            .attr('transform', `translate(0, ${height - margin.bottom - 30})`)
+            .attr('transform', `translate(0, ${height - margin.bottom})`)
             .transition(t)
             .call(d3.axisBottom(x));
     };
@@ -98,6 +100,18 @@ export const scatterPlot = () => {
         return arguments.length
         ? ((yValue = _), my)
         : yValue;
+    }
+    
+    my.xType = function (_) {
+        return arguments.length
+        ? ((xType = _), my)
+        : xType;
+    }
+
+    my.yType = function (_) {
+        return arguments.length
+        ? ((yType = _), my)
+        : yType;
     }
 
     my.margin = function (_) {
